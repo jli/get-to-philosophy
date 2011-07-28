@@ -73,6 +73,8 @@
         filtered (at html
                      [#{:div.dablink
                         :span#coordinates
+                        :table
+                        :dl
                         :.infobox
                         :.thumb
                         :.vertical-navbox
