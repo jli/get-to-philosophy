@@ -45,13 +45,17 @@
                      (.startsWith base "Portal:")
                      (.startsWith base "Talk:")
                      (.startsWith base "Template:")
-                     (.startsWith base "Wiktionary")
+                     (.startsWith base "List_of_")
+                     (.equals base "Wiktionary")
                      (.endsWith base "(disambiguation)")))
         base))))
 
+(defn to-html [article]
+  (html-resource (java.net.URL. (wiki-url article))))
+
 ;; needs sentence work
 (defn parse-links-raw [article]
-  (let [html (html-resource (java.net.URL. (wiki-url article)))
+  (let [html (to-html article)
         links (map #(:href (:attrs %))
                    (select html [:div#bodyContent
                                  (but [:div.dablink]) ;; skip disambig section
