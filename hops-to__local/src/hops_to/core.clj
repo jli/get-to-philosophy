@@ -1,5 +1,5 @@
 (ns hops-to.core
-  (:use [net.cgrand.enlive-html :only [but html-resource text select]]
+  (:use [net.cgrand.enlive-html :only [at html-resource text select]]
         [clojure.contrib.command-line :only [with-command-line]])
   (:gen-class))
 
@@ -36,18 +36,19 @@
 (defn relevant-link [link]
   (when (.startsWith link "/wiki/")
     (let [base (.substring link (count "/wiki/"))]
-      (when (not (or (.startsWith base "Wikipedia:")
-                     (.startsWith base "Special:")
-                     (.startsWith base "File:")
-                     (.startsWith base "Image:")
-                     (.startsWith base "Category:")
-                     (.startsWith base "Help:")
-                     (.startsWith base "Portal:")
-                     (.startsWith base "Talk:")
-                     (.startsWith base "Template:")
-                     (.startsWith base "List_of_")
-                     (.equals base "Wiktionary")
-                     (.endsWith base "(disambiguation)")))
+      (when (not (or
+                  (.startsWith base "Wikipedia:")
+                  (.startsWith base "Special:")
+                  (.startsWith base "File:")
+                  (.startsWith base "Image:")
+                  (.startsWith base "Category:")
+                  (.startsWith base "Help:")
+                  (.startsWith base "Portal:")
+                  (.startsWith base "Talk:")
+                  (.startsWith base "Template:")
+                  (.startsWith base "List_of_")
+                  (.equals base "Wiktionary")
+                  ))
         base))))
 
 (defn to-html [article]
@@ -56,11 +57,15 @@
 ;; needs sentence work
 (defn parse-links-raw [article]
   (let [html (to-html article)
-        links (map #(:href (:attrs %))
-                   (select html [:div#bodyContent
-                                 (but [:div.dablink]) ;; skip disambig section
-                                 (but [:span#coordinates]) ;; skip coordinates
-                                 :a]))
+        ;; drop disambig, coordinates
+        filtered (at html
+                     [#{:div.dablink
+                        :span#coordinates
+                        :.infobox
+                        :.thumb
+                        }] nil)
+        link-nodes (select filtered [:div#bodyContent :a])
+        links (map #(:href (:attrs %)) link-nodes)
         relevant (filter-map relevant-link links)]
     (map #(vector "" %) relevant)))
 
