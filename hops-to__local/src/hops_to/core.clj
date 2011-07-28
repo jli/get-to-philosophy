@@ -51,18 +51,31 @@
                   ))
         base))))
 
-(defn to-html [article]
-  (html-resource (java.net.URL. (wiki-url article))))
+(defn fetch [article]
+  (-> article
+      wiki-url
+      java.net.URL.
+      .getContent
+      slurp))
+
+;; YES, this is terrible. Sorry.
+(defn remove-parens [str]
+  (-> #"[^_]\([^)]*\)"
+      (.matcher str)
+      (.replaceAll "")))
 
 ;; needs sentence work
 (defn parse-links-raw [article]
-  (let [html (to-html article)
+  (let [text (fetch article)
+        no-parens-text (remove-parens text)
+        html (html-resource (java.io.StringReader. no-parens-text))
         ;; drop disambig, coordinates
         filtered (at html
                      [#{:div.dablink
                         :span#coordinates
                         :.infobox
                         :.thumb
+                        :.vertical-navbox
                         }] nil)
         link-nodes (select filtered [:div#bodyContent :a])
         links (map #(:href (:attrs %)) link-nodes)
