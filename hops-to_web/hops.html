@@ -1,6 +1,9 @@
 <html><head><title>Get to Philosophy!</title></head><body>
 <h1>Get to Philosophy!</h1>
-<input type="textbox" value="Aesthetics" id="in"></input>
+<iframe id="iframe" width="600" height="300" src="http://en.wikipedia.org/"></iframe>
+<input type="textbox" value="Aesthetics" id="start"></input>
+<input type="textbox" value="Philosophy" id="stop"></input>
+<input type="checkbox" value="false" id="cycle"></input>
 <button id="button" onclick="buttonclick()">go</button>
 <div id="out">output</div>
 <!--
@@ -14,8 +17,7 @@ function get(id) { return document.getElementById(id); }
 
 function buttonclick() {
   get('out').innerHTML='';
-  var start=get('in').value;
-  hops.main.go(start, "Philosophy", 50, false, true);
+  hops.main.go(get('start').value, get('stop').value, 50, get('cycle').value, true);
 }
 </script>
 </body></html>

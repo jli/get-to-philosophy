@@ -2,6 +2,9 @@
   (:require [goog.dom :as dom]
             [cljs.reader :as reader]))
 
+;;(defn set-iframe [a]
+;;  (js* "document.getElementById('iframe').src=\"/wiki?~{a}\";"))
+
 (defn ^:export out [& args]
   (dom/append (dom/getElement "out") (apply str args))
   (dom/append (dom/getElement "out") (dom/htmlToDocumentFragment "<br>")))
@@ -24,6 +27,7 @@
   ([start] (iterate inc start)))
 
 (defn parse-links [article]
+  ;;(set-iframe article)
   (let [x (js* "new XMLHttpRequest()")]
     (. x (open "GET" (str "/links?" article) false))
     (. x (send))

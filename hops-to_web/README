@@ -11,6 +11,7 @@ The backend uses Ring and runs a Jetty server. Loading the site brings you to th
 ## Todo
 
 * Clean up output. Replace trace and final list with constantly updating list (when avoiding cycles and backtracking, should delete link).
+* _A_jax
 * Make article names links.
 * Load article in frame.
 * Expose options (stop, cycle behavior).
