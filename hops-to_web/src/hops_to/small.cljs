@@ -14,5 +14,5 @@
 
 (defn ^:export main [n]
   (let [v [:yes :it :is]
-        vs (map #(vector %1 %2) (all-ints) v)]
-    (str "yoyo:" n vs)))
+        vs (map #(str (vector %1 %2)) (all-ints) v)]
+    (str "yoyo: " n vs)))
