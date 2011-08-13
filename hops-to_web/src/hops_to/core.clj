@@ -1,5 +1,8 @@
 (ns hops-to.core
-  (:use [ring.adapter.jetty :only [run-jetty]])
+  (:use [ring.adapter.jetty :only [run-jetty]]
+        [ring.util.response :only [file-response]]
+        [ring.middleware.file :as file]
+        [hops-to.parse-links :only [parse-links]])
   (:gen-class))
 
 
@@ -17,9 +20,12 @@
 ;;; routing/app
 
 (defn app [req]
-  (if (.startsWith (:uri req) "/fetch")
-    (response (fetch-page (:query-string req)))
-    (response "oh hi")))
+  (condp #(.startsWith %1 %2) (:uri req)
+    "/fetch" (response (fetch-page (:query-string req)))
+    "/links" (response (str (into [] (parse-links (:query-string req)))))
+    ;;"/hops.js" (file-response "/home/jli/projects/hops-to/hops-to_web/hops.js")
+    (file-response "hops.html")
+    ))
 
 (defn -main []
-   (run-jetty app {:port 8080}))
+   (run-jetty (file/wrap-file app ".") {:port 8080}))

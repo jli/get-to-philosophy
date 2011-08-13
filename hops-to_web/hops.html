@@ -1,0 +1,21 @@
+<html><head><title>Get to Philosophy!</title></head><body>
+<h1>Get to Philosophy!</h1>
+<input type="textbox" value="Aesthetics" id="in"></input>
+<button id="button" onclick="buttonclick()">go</button>
+<div id="out">output</div>
+<!--
+<script src="out/goog/base.js"></script>
+<script src="out/hops.js"></script>
+-->
+<script src="hops.js"></script>
+<script>
+//goog.require('hops');
+function get(id) { return document.getElementById(id); }
+
+function buttonclick() {
+  get('out').innerHTML='';
+  var start=get('in').value;
+  hops.main.go(start, "Philosophy", 50, false, true);
+}
+</script>
+</body></html>

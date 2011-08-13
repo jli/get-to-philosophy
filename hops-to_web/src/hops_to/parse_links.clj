@@ -71,6 +71,8 @@
                         :.infobox
                         :.thumb
                         :.vertical-navbox
+                        :.boilerplate
+                        :.further
                         }] nil)
         link-nodes (select filtered [:div#bodyContent :a])
         links (map #(:href (:attrs %)) link-nodes)
