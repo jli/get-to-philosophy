@@ -6,8 +6,9 @@
 ;;  (js* "document.getElementById('iframe').src=\"/wiki?~{a}\";"))
 
 (defn ^:export out [& args]
-  (dom/append (dom/getElement "out") (apply str args))
-  (dom/append (dom/getElement "out") (dom/htmlToDocumentFragment "<br>")))
+  (let [add #(dom/append (dom/getElement "out") %)]
+    (add (apply str args))
+    (add (dom/htmlToDocumentFragment "<br>"))))
 
 (defn capitalize [s]
   (try (let [first (. s (substring 0 1))
@@ -48,8 +49,9 @@
   (when loud
   ;;   (println "\npath:")
   ;;   (doseq [[article] path] (println " " article))
-  ;;   (println "ttl:" ttl))
-    (out " " cur "(ttl:" (str ttl ")")))
+  ;;   (println "ttl:" ttl)
+    ;;(out " " cur "(ttl:" (str ttl ")"))
+    (out cur))
   (cond
    (= stop cur) [:path path] ;win
    (and (seen cur) cyclestop) [:cyclestop path]
@@ -80,6 +82,6 @@ try the next sentence."
         (do
           (when (= tag :cyclestop) (out "Stopped at cycle!"))
           (doseq [[i [article _sentence next]] (map #(vector %1 %2) (all-ints) rest)]
-            (out (str i ".") article "->" next)))
+            (out (str i ". ") article "→" next)))
         :default (out "...unexpected")))))
 
