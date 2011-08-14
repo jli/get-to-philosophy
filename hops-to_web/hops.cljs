@@ -11,7 +11,7 @@
   (try (let [first (. s (substring 0 1))
              rest (. s (substring 1))]
          (str (. first (toUpperCase)) rest))
-       (catch "Error"  s)))
+       (catch "Error" s)))
 
 ;; needs work
 (defn ^:export normalize [article]
@@ -90,7 +90,7 @@ try the next sentence."
      (let [path (wikidfs (normalize start) [] #{} ttl (normalize stop) cyclestop loud)
            [tag rest] path]
        (cond
-        (some #(= tag %) [:end :ttl]) (out "Fail!" path)
+        (some #(= tag %) [:end :ttl]) (out "Fail!" rest)
         (some #(= tag %) [:cyclestop :path])
         (do
           (when (= tag :cyclestop) (out "Stopped at cycle!"))
