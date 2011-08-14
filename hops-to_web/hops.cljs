@@ -7,14 +7,20 @@
 ;;   (let [link (str "/wiki?" a )]
 ;;     (js* "document.getElementById('iframe').src=~{link};")))
 
+;;; substring doesn't throw exceptions on oob indexes, hurray. but
+;;; just for reference if it did...
+;; (defn capitalize [s]
+;;   (try (let [first (. s (substring 0 1))
+;;              rest (. s (substring 1))]
+;;          (str (. first (toUpperCase)) rest))
+;;        (catch (js* "Object") e s)))
 (defn capitalize [s]
-  (try (let [first (. s (substring 0 1))
+ (let [first (. s (substring 0 1))
              rest (. s (substring 1))]
-         (str (. first (toUpperCase)) rest))
-       (catch "Error" s)))
+         (str (. first (toUpperCase)) rest)))
 
 ;; needs work
-(defn ^:export normalize [article]
+(defn normalize [article]
   (-> article
       (.replace " " "_")
       capitalize))
