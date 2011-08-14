@@ -22,10 +22,11 @@
 ;;; routing/app
 
 (defn app [req]
-  (condp #(.startsWith %1 %2) (:uri req)
+  (condp #(.startsWith %2 %1) (:uri req)
     "/fetch" (response (fetch-page (:query-string req)))
     "/wiki" (response (fetch-wiki-page (:query-string req)))
     "/links" (response (str (into [] (parse-links/parse-links (:query-string req)))))
+    "/love" (response "fear is the heart of love")
     ;;"/hops.js" (file-response "/home/jli/projects/hops-to/hops-to_web/hops.js")
     (file-response "hops.html")
     ))
