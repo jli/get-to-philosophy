@@ -23,6 +23,7 @@ is compiled from hops.cljs.
 * Multi-level page cache - LRU memo parse-links, disk cache for html
 * Escape page names?
 * Show sentences for context.
+* Fix too-much-recursion when ttl is low.
 
 ## License
 
