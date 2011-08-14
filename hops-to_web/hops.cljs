@@ -2,13 +2,10 @@
   (:require [goog.dom :as dom]
             [cljs.reader :as reader]))
 
-;;(defn set-iframe [a]
-;;  (js* "document.getElementById('iframe').src=\"/wiki?~{a}\";"))
-
-(defn ^:export out [& args]
-  (let [add #(dom/append (dom/getElement "out") %)]
-    (add (apply str args))
-    (add (dom/htmlToDocumentFragment "<br>"))))
+;;; doesn't work well - too jumpy. unless I can load in the text...
+;; (defn set-iframe [a]
+;;   (let [link (str "/wiki?" a )]
+;;     (js* "document.getElementById('iframe').src=~{link};")))
 
 (defn capitalize [s]
   (try (let [first (. s (substring 0 1))
@@ -22,13 +19,29 @@
       (.replace " " "_")
       capitalize))
 
+(defn out [& args]
+  (let [add #(dom/append (dom/getElement "out") %)]
+    (add (apply str args))
+    (add (dom/htmlToDocumentFragment "<br>"))))
+
+(def wiki-prefix "http://en.wikipedia.org/wiki/")
+
+(defn wiki-url [article] (str wiki-prefix (normalize article)))
+
+(defn out-link [article]
+  (let [add #(dom/append (dom/getElement "out") %)
+        link (wiki-url article)
+        anchor (dom/createDom "a" (js* "{'href': ~{link}}") article)]
+    (add anchor)
+    (add (dom/htmlToDocumentFragment "<br>"))))
+
 (defn all-ints
   "[start] Infinite seq of ints, starting at <start> if given."
   ([] (all-ints 1))
   ([start] (iterate inc start)))
 
 (defn parse-links [article]
-  ;;(set-iframe article)
+  ;; (set-iframe article)
   (let [x (js* "new XMLHttpRequest()")]
     (. x (open "GET" (str "/links?" article) false))
     (. x (send))
@@ -51,7 +64,7 @@
   ;;   (doseq [[article] path] (println " " article))
   ;;   (println "ttl:" ttl)
     ;;(out " " cur "(ttl:" (str ttl ")"))
-    (out cur))
+    (out-link cur))
   (cond
    (= stop cur) [:path path] ;win
    (and (seen cur) cyclestop) [:cyclestop path]

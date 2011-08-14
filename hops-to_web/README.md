@@ -18,7 +18,6 @@ is compiled from hops.cljs.
   updating list (when avoiding cycles and backtracking, should delete
   link).
 * __A__jax
-* Make article names links.
 * Load article in frame.
 * Enter.
 * Multi-level page cache - LRU memo parse-links, disk cache for html
