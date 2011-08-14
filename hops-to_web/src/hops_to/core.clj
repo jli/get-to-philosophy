@@ -3,6 +3,7 @@
         [ring.util.response :only [file-response]]
         [ring.middleware.file :as file]
         [hops-to.parse-links :as parse-links])
+  (:require [swank.swank])
   (:gen-class))
 
 
@@ -32,4 +33,6 @@
     ))
 
 (defn -main []
-   (run-jetty (file/wrap-file app ".") {:port 8080}))
+  ;; DYNAMISM
+  (swank.swank/start-server :port 8081)
+  (run-jetty (file/wrap-file #'app ".") {:port 8080}))
