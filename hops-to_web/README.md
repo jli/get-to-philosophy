@@ -21,7 +21,7 @@ is compiled from hops.cljs.
 * Make article names links.
 * Load article in frame.
 * Enter.
-* Cache pages.
+* Multi-level page cache - LRU memo parse-links, disk cache for html
 * Escape page names?
 * Show sentences for context.
 

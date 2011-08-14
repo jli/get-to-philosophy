@@ -58,7 +58,7 @@
       (.replaceAll "")))
 
 ;; needs sentence work
-(defn parse-links [article]
+(defn parse-links-raw [article]
   (let [text (fetch article)
         no-parens-text (remove-parens text)
         html (html-resource (java.io.StringReader. no-parens-text))
@@ -78,3 +78,5 @@
         links (map #(:href (:attrs %)) link-nodes)
         relevant (filter-map relevant-link links)]
     (map #(vector "" %) relevant)))
+
+(def parse-links (memoize parse-links-raw))
