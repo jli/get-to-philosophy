@@ -17,11 +17,13 @@ is compiled from hops.cljs.
 * Clean up output. Replace trace and final list with constantly
   updating list (when avoiding cycles and backtracking, should delete
   link).
-* _A_jax
+* __A__jax
 * Make article names links.
 * Load article in frame.
-* Expose options (stop, cycle behavior).
 * Enter.
+* Cache pages.
+* Escape page names?
+* Show sentences for context.
 
 ## License
 
