@@ -1,7 +1,8 @@
 # hops-to
 
-A small Clojure page (Clojure backend, Clojurescript front) for
-playing the [Get To Philosophy game]
+A small Clojure page ([Clojure] (https://github.com/clojure/clojure)
+backend, [ClojureScript] (https://github.com/clojure/clojurescript)
+front) for playing the [Get To Philosophy game]
 (http://en.wikipedia.org/wiki/Wikipedia:Get_to_Philosophy).
 
 ## Usage
