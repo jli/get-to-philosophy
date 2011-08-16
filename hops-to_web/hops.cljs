@@ -46,12 +46,18 @@
   ([] (all-ints 1))
   ([start] (iterate inc start)))
 
-(defn parse-links [article]
+(defn parse-links [article k]
   ;; (set-iframe article)
-  (let [x (js* "new XMLHttpRequest()")]
-    (. x (open "GET" (str "/links?" article) false))
-    (. x (send))
-    (reader/read-string (. x responseText))))
+  ;; (out "parse-links" article)
+  (let [x (js* "new XMLHttpRequest()")
+        k2 (fn []
+             (when (= 4 (. x readyState))
+               ;; (out "parse-links on " article " ready")
+               (k (reader/read-string (. x responseText)))))]
+    (. x (open "GET" (str "/links?" article) true))
+    (js* "~{x}.onreadystatechange=~{k2}")
+    (. x (send))))
+
 
 ;; returns:
 ;; path-type: [[<article> <sentence> <next>] ...]
@@ -64,22 +70,35 @@
    Pre: ttl non-negative.
    Post: seen set and path vector increased by next link (next
   current). current is included in seen."
-  [cur path seen ttl stop cyclestop]
+  [cur path seen ttl stop cyclestop k]
   ;;(out " " cur "(ttl:" (str ttl ")"))
   (out-link cur)
   (cond
-   (= stop cur) [:path path] ;;win
-   (seen cur)   (if cyclestop [:cyclestop path] [:cyclecontinue])
-   (zero? ttl)  [:ttl]
+   (= stop cur) (k [:path path]) ;;win
+   (seen cur)   (k (if cyclestop [:cyclestop path] [:cyclecontinue]))
+   (zero? ttl)  (k [:ttl])
    :default
-   (let [sentences-with-links (parse-links cur)
-         results (map (fn [[sentence next]]
-                        (wikipath next (conj path [cur sentence next]) (conj seen cur)
-                                  (dec ttl) stop cyclestop))
-                      sentences-with-links)
-         normals (filter (fn [[type _rest]] (not= type :cyclecontinue))
-                           results)]
-     (or (first normals) [:end]))))
+   ;; this. shit. is. insane.
+   (parse-links cur
+                (let [k2 (fn rec [sentences-with-links]
+                           ;; (out "running. next: " (second (first sentences-with-links)))
+                           ;; (out "next next: " (second (second sentences-with-links)))
+                           (let [[sentence next] (first sentences-with-links)
+                                 k3 (fn [[type _rest :as all]]
+                                      (if (not= type :cyclecontinue)
+                                        (k all)
+                                        (do
+                                          (out "cycled back to " next "! skipping")
+                                          (rec (rest sentences-with-links)))
+                                        ))]
+                             (if (empty? sentences-with-links)
+                               (k [:end])
+                               (wikipath next
+                                         (conj path [cur sentence next])
+                                         (conj seen cur)
+                                         (dec ttl) stop cyclestop
+                                         k3))))]
+                  k2))))
 
 ;; easy nocycles version
 (defn wikipath-nocycles
@@ -107,14 +126,14 @@ steps with sentences. cyclestop controls whether to stop on cycles, or
 try the next sentence."
   ([start stop] (go start stop 100 true))
   ([start stop ttl cyclestop]
-     (let [path (wikipath (normalize start) [] #{} ttl (normalize stop) cyclestop)
-           ;; (wikipath-nocycles (normalize start) [] #{} ttl (normalize stop))
-           [tag rest] path]
-       (cond
-        (#{:end :ttl} tag) (out "Failed! Dead end or ttl expired." rest)
-        (#{:cyclestop :path} tag)
-        (do
-          (when (= tag :cyclestop) (out "Stopped at cycle!"))
-          (doseq [[i [article _sentence next]] (map #(vector %1 %2) (all-ints) rest)]
-            (out (str i ". ") article "→" next)))
-        :default (out "...unexpected")))))
+     (let [k (fn [[tag rest]]
+               (cond
+                (#{:end :ttl} tag) (out "Failed! Dead end or ttl expired." rest)
+                (#{:cyclestop :path} tag)
+                (do
+                  (when (= tag :cyclestop) (out "Stopped at cycle!"))
+                  (doseq [[i [article _sentence next]] (map #(vector %1 %2) (all-ints) rest)]
+                    (out (str i ". ") article "→" next)))
+                :default (out "...unexpected:" tag rest)))]
+       (wikipath (normalize start) [] #{} ttl (normalize stop) cyclestop k)
+       )))
