@@ -1,7 +1,9 @@
 (ns hops-to.core
   (:use [ring.adapter.jetty :only [run-jetty]]
         [ring.util.response :only [file-response]]
-        [ring.middleware.file :as file]
+        [ring.middleware.file :only [wrap-file]]
+        ;; [ring.middleware.reload :only [wrap-reload]]
+        [ring.middleware.stacktrace :only [wrap-stacktrace]]
         [hops-to.parse-links :as parse-links])
   (:require [swank.swank])
   (:gen-class))
@@ -22,7 +24,7 @@
 
 ;;; routing/app
 
-(defn app [req]
+(defn base-app [req]
   (condp #(.startsWith %2 %1) (:uri req)
     "/fetch" (response (fetch-page (:query-string req)))
     "/wiki" (response (fetch-wiki-page (:query-string req)))
@@ -32,7 +34,13 @@
     (file-response "hops.html")
     ))
 
+(def app
+     (-> #'base-app
+         (wrap-file ".")
+         ;; (wrap-reload '[hops-to.core hops-to.parse-links]) ; too slow
+         (wrap-stacktrace)))
+
 (defn -main []
   ;; DYNAMISM
   (swank.swank/start-server :port 8081)
-  (run-jetty (file/wrap-file #'app ".") {:port 8080}))
+  (run-jetty #'app {:port 8080}))
