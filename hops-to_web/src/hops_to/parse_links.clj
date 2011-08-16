@@ -61,8 +61,13 @@
 (defn stupid-tagsoup-hack [text]
   (.replace text \return \ ))
 
+;; omfg
+(defn timestamp []
+  (-> (java.util.Date.) .getTime java.sql.Timestamp. .toString))
+
 ;; needs sentence work
 (defn parse-links-raw [article]
+  (println (timestamp) "parse-links-raw" article)
   (let [text (fetch article)
         text (stupid-tagsoup-hack text)
         no-parens-text (remove-parens text)
