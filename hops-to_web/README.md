@@ -19,7 +19,6 @@ is compiled from hops.cljs.
   link).
 * __A__jax
 * Load article in frame.
-* Enter.
 * Multi-level page cache - LRU memo parse-links, disk cache for html
 * Escape page names?
 * Show sentences for context.
