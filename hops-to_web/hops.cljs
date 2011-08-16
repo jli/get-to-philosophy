@@ -59,48 +59,62 @@
 ;; [:cyclestop <path-type>]
 ;; [:ttl]
 ;; [:end]
-(defn wikidfs
-  "[current path seen ttl stop cyclestop loud]
+(defn wikipath
+  "[current path seen ttl stop cyclestop]
    Pre: ttl non-negative.
    Post: seen set and path vector increased by next link (next
   current). current is included in seen."
-  [cur path seen ttl stop cyclestop loud]
-  (when loud
-  ;;   (println "\npath:")
-  ;;   (doseq [[article] path] (println " " article))
-  ;;   (println "ttl:" ttl)
-    ;;(out " " cur "(ttl:" (str ttl ")"))
-    (out-link cur))
+  [cur path seen ttl stop cyclestop]
+  ;;(out " " cur "(ttl:" (str ttl ")"))
+  (out-link cur)
   (cond
-   (= stop cur) [:path path] ;win
-   (and (seen cur) cyclestop) [:cyclestop path]
-   (seen cur) [:end]
-   (zero? ttl) [:ttl]
+   (= stop cur) [:path path] ;;win
+   (seen cur)   (if cyclestop [:cyclestop path] [:cyclecontinue])
+   (zero? ttl)  [:ttl]
    :default
    (let [sentences-with-links (parse-links cur)
          results (map (fn [[sentence next]]
-                        (wikidfs next (conj path [cur sentence next]) (conj seen cur)
-                                 (dec ttl) stop cyclestop loud))
+                        (wikipath next (conj path [cur sentence next]) (conj seen cur)
+                                  (dec ttl) stop cyclestop))
                       sentences-with-links)
-         [result] (filter (fn [[type _rest :as all]]
-                             (or (= type :path) (= type :cyclestop)))
-                          results)]
-     (or result [:end]))))
+         normals (filter (fn [[type _rest]] (not= type :cyclecontinue))
+                           results)]
+     (or (first normals) [:end]))))
+
+;; easy nocycles version
+(defn wikipath-nocycles
+  "[current path seen ttl stop]
+   Pre: ttl non-negative.
+   Post: seen set and path vector increased by next link (next
+  current). current is included in seen."
+  [cur path seen ttl stop]
+  ;;(out " " cur "(ttl:" (str ttl ")"))
+  (out-link cur)
+  (cond
+   (= stop cur) [:path path] ;win
+   (seen cur) [:cyclestop path]
+   (zero? ttl) [:ttl]
+   :default
+   (let [sentences-with-links (parse-links cur)
+         [[sentence next]] sentences-with-links]
+     (recur next (conj path [cur sentence next]) (conj seen cur)
+            (dec ttl) stop))))
+
 
 (defn ^:export go
   "[start stop cyclestop] Start at <start>, hop til <stop>, print out
 steps with sentences. cyclestop controls whether to stop on cycles, or
 try the next sentence."
-  ([start stop] (go start stop 100 true true))
-  ([start stop ttl cyclestop loud]
-     (let [path (wikidfs (normalize start) [] #{} ttl (normalize stop) cyclestop loud)
+  ([start stop] (go start stop 100 true))
+  ([start stop ttl cyclestop]
+     (let [path (wikipath (normalize start) [] #{} ttl (normalize stop) cyclestop)
+           ;; (wikipath-nocycles (normalize start) [] #{} ttl (normalize stop))
            [tag rest] path]
        (cond
-        (some #(= tag %) [:end :ttl]) (out "Fail!" rest)
-        (some #(= tag %) [:cyclestop :path])
+        (#{:end :ttl} tag) (out "Failed! Dead end or ttl expired." rest)
+        (#{:cyclestop :path} tag)
         (do
           (when (= tag :cyclestop) (out "Stopped at cycle!"))
           (doseq [[i [article _sentence next]] (map #(vector %1 %2) (all-ints) rest)]
             (out (str i ". ") article "→" next)))
         :default (out "...unexpected")))))
-
