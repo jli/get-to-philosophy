@@ -89,4 +89,8 @@
         relevant (filter-map relevant-link links)]
     (map #(vector "" %) relevant)))
 
-(def parse-links (memoize parse-links-raw))
+(defn parse-links-safe [article]
+  (try (parse-links-raw article)
+       (catch Exception _ [])))
+
+(def parse-links (memoize parse-links-safe))
