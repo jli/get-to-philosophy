@@ -15,13 +15,13 @@ is compiled from hops.cljs.
 ## Todo
 
 * Clean up output. Replace trace and final list with constantly
-  updating list (when avoiding cycles and backtracking, should delete
-  link).
-* Load article in frame.
+  updating list (when avoiding cycles, delete link).
+* Load article in frame.(?)
 * Multi-level page cache - LRU memo parse-links, disk cache for html
-* Escape page names?
+* Escape page names.(?)
 * Show sentences for context.
-* Fix too-much-recursion when ttl is low.
+* Sweet progress spinner.
+* Correct parens parsing.
 
 ## License
 
