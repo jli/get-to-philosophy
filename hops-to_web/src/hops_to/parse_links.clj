@@ -57,9 +57,14 @@
       (.matcher str)
       (.replaceAll "")))
 
+;; https://issues.apache.org/jira/browse/TIKA-434
+(defn stupid-tagsoup-hack [text]
+  (.replace text \return \ ))
+
 ;; needs sentence work
 (defn parse-links-raw [article]
   (let [text (fetch article)
+        text (stupid-tagsoup-hack text)
         no-parens-text (remove-parens text)
         html (html-resource (java.io.StringReader. no-parens-text))
         ;; drop disambig, coordinates
