@@ -3,10 +3,12 @@
 <!-- <iframe id="iframe" width="600" height="300" src="http://en.wikipedia.org/"></iframe> -->
 
 <p>
-<input type="textbox" onkeypress="handle_enter(event)" value="Aesthetics" id="start"></input>&rarr;
-<input type="textbox" onkeypress="handle_enter(event)" value="Philosophy" id="stop"></input>
+<form action="dummy" id="form" method="get">
+<input type="textbox" value="Aesthetics" id="start"></input>&rarr;
+<input type="textbox" value="Philosophy" id="stop"></input>
 <input type="checkbox" value="disabled" id="cyclestop">stop on cycles?</input>
-<button id="button" onclick="go()">go</button>
+<input type="submit" id="submit" value="go"></input>
+</form>
 
 <div id="out"></div>
 
@@ -14,15 +16,11 @@
 <script>
 function get(id) { return document.getElementById(id); }
 
-function handle_enter(e) {
-  if (e.which === 13) { // enter
-    go();
-  }
-}
-
 function go() {
   get('out').innerHTML='';
   hops.main.go(get('start').value, get('stop').value, 50, get('cyclestop').checked);
+  return false; // false to prevent actual form submission
 }
+get('form').onsubmit=go;
 </script>
 </body></html>
