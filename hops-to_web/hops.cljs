@@ -59,6 +59,7 @@
     (. x (send))))
 
 
+
 ;; returns:
 ;; path-type: [[<article> <sentence> <next>] ...]
 ;; [:path <path-type>]
@@ -97,7 +98,6 @@
                                 (dec ttl) stop cyclestop
                                 k2)))))))
 
-
 ;; easy no cycles, no cps version
 (defn wikipath-nocycles
   "[current path seen ttl stop]
@@ -117,6 +117,36 @@
      (recur next (conj path [cur sentence next]) (conj seen cur)
             (dec ttl) stop))))
 
+(defn transition-map
+  "Takes a sequence of states and return a map of state transitions,
+where transitions are a cycle.
+ [] -> {}, [1] -> {1 1}, [1 2 3] -> {1 2, 2 3, 3 1}"
+  ([xs] (if-let [f (first xs)] (transition-map f {} xs) {}))
+  ([head acc xs] ;; head is for the last node
+     (cond (empty? xs) acc
+           (empty? (rest xs)) (assoc acc (first xs) head)
+           :default
+           (recur head
+                  (assoc acc (first xs) (second xs))
+                  (rest xs)))))
+
+(def spinner (dom/getElement "spinner"))
+(def spinner-state (atom nil)) ;; "direction" keyword, or nil at start
+(def spinner-transition (transition-map [:vert :tlbr :hor :bltr]))
+(defn spinner-set-dir [dir]
+  (let [txt ({:vert "|", :tlbr "\\", :hor "-", :bltr "/", :done "done!"} dir)]
+    (js* "~{spinner}.innerHTML=~{txt}")))
+(defn start-spinner []
+  (let [anim (fn anim []
+               (let [s @spinner-state]
+                 (spinner-set-dir s)
+                 (when (not= s :done)
+                   (swap! spinner-state spinner-transition)
+                   (js* "setTimeout(~{anim}, 150)"))))]
+    (swap! spinner-state (constantly :hor))
+    (js* "setTimeout(~{anim}, 150)")))
+
+(defn stop-spinner [] (swap! spinner-state (constantly :done)))
 
 (defn ^:export go
   "[start stop cyclestop] Start at <start>, hop til <stop>, print out
@@ -124,7 +154,9 @@ steps with sentences. cyclestop controls whether to stop on cycles, or
 try the next sentence."
   ([start stop] (go start stop 100 true))
   ([start stop ttl cyclestop]
+     (start-spinner)
      (let [k (fn [[tag rest]]
+               (stop-spinner)
                (cond
                 (#{:end :ttl} tag) (out "Failed! Dead end or ttl expired." rest)
                 (#{:cyclestop :path} tag)
