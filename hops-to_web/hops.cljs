@@ -80,27 +80,25 @@
    :default
    ;; this. shit. is. insane.
    (parse-links cur
-                (let [k2 (fn rec [sentences-with-links]
-                           ;; (out "running. next: " (second (first sentences-with-links)))
-                           ;; (out "next next: " (second (second sentences-with-links)))
-                           (let [[sentence next] (first sentences-with-links)
-                                 k3 (fn [[type _rest :as all]]
-                                      (if (not= type :cyclecontinue)
-                                        (k all)
-                                        (do
-                                          (out "cycled back to " next "! skipping")
-                                          (rec (rest sentences-with-links)))
-                                        ))]
-                             (if (empty? sentences-with-links)
-                               (k [:end])
-                               (wikipath next
-                                         (conj path [cur sentence next])
-                                         (conj seen cur)
-                                         (dec ttl) stop cyclestop
-                                         k3))))]
-                  k2))))
+                (fn rec [sentences-with-links]
+                  ;; (out "running. next: " (second (first sentences-with-links)))
+                  ;; (out "next next: " (second (second sentences-with-links)))
+                  (let [[[sentence next] & rest] sentences-with-links
+                        k2 (fn [[type _ :as all]]
+                             (if (not= type :cyclecontinue)
+                               (k all)
+                               (do (out "cycled back to " next "! skipping")
+                                   (rec rest))))]
+                    (if (empty? sentences-with-links)
+                      (k [:end])
+                      (wikipath next
+                                (conj path [cur sentence next])
+                                (conj seen cur)
+                                (dec ttl) stop cyclestop
+                                k2)))))))
 
-;; easy nocycles version
+
+;; easy no cycles, no cps version
 (defn wikipath-nocycles
   "[current path seen ttl stop]
    Pre: ttl non-negative.
