@@ -131,7 +131,9 @@ try the next sentence."
                 (do
                   (when (= tag :cyclestop) (out "Stopped at cycle!"))
                   (doseq [[i [article _sentence next]] (map #(vector %1 %2) (all-ints) rest)]
-                    (out (str i ". ") article "→" next)))
+                    (out (str i ". ")
+                         (when (= i 1) article)
+                         "→" next)))
                 :default (out "...unexpected:" tag rest)))]
-       (wikipath (normalize start) [] #{} ttl (normalize stop) cyclestop k)
-       )))
+       (wikipath (normalize start) [] #{} ttl (normalize stop) cyclestop k))))
+
