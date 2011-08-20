@@ -22,6 +22,7 @@
   (.waitFor (.exec runtime "inotifywait -e modify hops.cljs"))
   (spit "tmp" @last-copy)
   (run-full "diff -w -d tmp hops.cljs")
+  (run-full "rm tmp")
   (swap! last-copy (constantly (slurp "hops.cljs")))
   (println (java.util.Date.) "saw change, recompiling!")
   (b)
