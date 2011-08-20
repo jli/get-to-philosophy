@@ -93,4 +93,4 @@
   (try (parse-links-raw article)
        (catch Exception _ [])))
 
-(def parse-links (memoize parse-links-safe))
+(def parse-links (memoize (comp parse-links-safe normalize)))
