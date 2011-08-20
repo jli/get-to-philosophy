@@ -10,7 +10,4 @@ for next in $CH/lib/*: $CH/src/clj: $CH/src/cljs: $CH/test/cljs; do
   CLJSC_CP=$CLJSC_CP$next
 done
 
-java -server -cp $CLJSC_CP:$CLASSPATH clojure.main -e \
-"(require '[cljs.closure] '[swank.swank])
-(def build cljs.closure/build)
-(swank.swank/start-server :port $1)"
+java -server -cp $CLJSC_CP:$CLASSPATH clojure.main cljs-compile.clj
