@@ -7,21 +7,19 @@
   font-family: monospace;
 }
 </style></head><body>
-<h1><a href="http://en.wikipedia.org/wiki/Wikipedia:Get_to_Philosophy">&rarr;Philosophy</a></h1>
 <!-- <iframe id="iframe" width="600" height="300" src="http://en.wikipedia.org/"></iframe> -->
 
 <p>
 <form action="dummy" id="form" method="get">
-<input type="textbox" value="Aesthetics" id="start"></input>&rarr;
+<input type="textbox" value="Aesthetics" id="start"></input><span style="font-size: xx-large;">&rarr;</span>
 <input type="textbox" value="Philosophy" id="stop"></input>
 <input type="checkbox" value="disabled" id="cyclestop">stop on cycles?</input>
 <input type="submit" id="submit" value="go"></input>
 </form>
 
-<div id="spinner"></div>
-<div id="out"></div>
-<p> &nbsp;<p>
-<div id="foot"><a href="https://github.com/jli/hops-to/tree/master/hops-to_web">src.</a> <small>&copy;2011jliWTFPL</small></div>
+<span id="out"></span><span id="spinner"></span>
+<p>
+<div id="foot"><a href="http://en.wikipedia.org/wiki/Wikipedia:Get_to_Philosophy">wiki.</a> <a href="https://github.com/jli/hops-to/tree/master/hops-to_web">src.</a> <small>&copy; 2011 <a href="http://circularly.org/">jli</a> <a href="https://github.com/jli/hops-to/blob/master/hops-to_web/WTFPL">WTFPL</a></small></div>
 <script src="hops.js"></script>
 <script>
 function get(id) { return document.getElementById(id); }

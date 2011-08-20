@@ -25,21 +25,24 @@
       (.replace " " "_")
       capitalize))
 
+(defn out-prim [s]
+  (dom/append (dom/getElement "out") s))
+
+(defn out-line [] (out-prim (dom/htmlToDocumentFragment "<br>")))
+
 (defn out [& args]
-  (let [add #(dom/append (dom/getElement "out") %)]
-    (add (apply str args))
-    (add (dom/htmlToDocumentFragment "<br>"))))
+  (out-prim (apply str args))
+  (out-prim (dom/htmlToDocumentFragment " ")))
 
 (def wiki-prefix "http://en.wikipedia.org/wiki/")
 
 (defn wiki-url [article] (str wiki-prefix (normalize article)))
 
 (defn out-link [article]
-  (let [add #(dom/append (dom/getElement "out") %)
-        link (wiki-url article)
+  (let [link (wiki-url article)
         anchor (dom/createDom "a" (js* "{'href': ~{link}}") article)]
-    (add anchor)
-    (add (dom/htmlToDocumentFragment "<br>"))))
+    (out-prim anchor)
+    (out-prim (dom/htmlToDocumentFragment " "))))
 
 (defn all-ints
   "[start] Infinite seq of ints, starting at <start> if given."
@@ -72,8 +75,8 @@
    Post: seen set and path vector increased by next link (next
   current). current is included in seen."
   [cur path seen ttl stop cyclestop k]
-  ;;(out " " cur "(ttl:" (str ttl ")"))
   (out-link cur)
+  (when (not= stop cur) (out "→"))
   (cond
    (= stop cur) (k [:path path]) ;;win
    (seen cur)   (k (if cyclestop [:cyclestop path] [:cyclecontinue]))
@@ -88,7 +91,7 @@
                         k2 (fn [[type _ :as all]]
                              (if (not= type :cyclecontinue)
                                (k all)
-                               (do (out "cycled back to " next "! skipping")
+                               (do (out "cycle!")
                                    (rec rest))))]
                     (if (empty? sentences-with-links)
                       (k [:end])
@@ -97,25 +100,6 @@
                                 (conj seen cur)
                                 (dec ttl) stop cyclestop
                                 k2)))))))
-
-;; easy no cycles, no cps version
-(defn wikipath-nocycles
-  "[current path seen ttl stop]
-   Pre: ttl non-negative.
-   Post: seen set and path vector increased by next link (next
-  current). current is included in seen."
-  [cur path seen ttl stop]
-  ;;(out " " cur "(ttl:" (str ttl ")"))
-  (out-link cur)
-  (cond
-   (= stop cur) [:path path] ;win
-   (seen cur) [:cyclestop path]
-   (zero? ttl) [:ttl]
-   :default
-   (let [sentences-with-links (parse-links cur)
-         [[sentence next]] sentences-with-links]
-     (recur next (conj path [cur sentence next]) (conj seen cur)
-            (dec ttl) stop))))
 
 (defn transition-map
   "Takes a sequence of states and return a map of state transitions,
@@ -132,9 +116,9 @@ where transitions are a cycle.
 
 (def spinner (dom/getElement "spinner"))
 (def spinner-state (atom nil)) ;; "direction" keyword, or nil at start
-(def spinner-transition (transition-map [:vert :tlbr :hor :bltr]))
+(def spinner-transition (transition-map [:bltr :hor :tlbr :vert]))
 (defn spinner-set-dir [dir]
-  (let [txt ({:vert "|", :tlbr "\\", :hor "-", :bltr "/", :done "done!"} dir)]
+  (let [txt ({:vert "|", :tlbr "\\", :hor "-", :bltr "/", :done ""} dir)]
     (js* "~{spinner}.innerHTML=~{txt}")))
 (defn start-spinner []
   (let [anim (fn anim []
@@ -152,20 +136,14 @@ where transitions are a cycle.
   "[start stop cyclestop] Start at <start>, hop til <stop>, print out
 steps with sentences. cyclestop controls whether to stop on cycles, or
 try the next sentence."
-  ([start stop] (go start stop 100 true))
+  ([start stop] (go start stop 100 false))
   ([start stop ttl cyclestop]
      (start-spinner)
-     (let [k (fn [[tag rest]]
-               (stop-spinner)
-               (cond
-                (#{:end :ttl} tag) (out "Failed! Dead end or ttl expired." rest)
-                (#{:cyclestop :path} tag)
-                (do
-                  (when (= tag :cyclestop) (out "Stopped at cycle!"))
-                  (doseq [[i [article _sentence next]] (map #(vector %1 %2) (all-ints) rest)]
-                    (out (str i ". ")
-                         (when (= i 1) article)
-                         "→" next)))
-                :default (out "...unexpected:" tag rest)))]
-       (wikipath (normalize start) [] #{} ttl (normalize stop) cyclestop k))))
-
+     (wikipath (normalize start) [] #{} ttl (normalize stop) cyclestop
+               (fn [[tag rest]]
+                 (stop-spinner)
+                 (cond
+                  (#{:end :ttl} tag) (out "failed! dead end or ttl expired" rest)
+                  (= tag :cyclestop) (out "stopped at cycle!")
+                  (= tag :path)      (do (out) (out "win! " (count rest)))
+                  :default           (out "jli sux. unexpected:" tag rest))))))
