@@ -15,7 +15,7 @@
 
 (def last-copy (atom (slurp "hops.cljs")))
 
-(defn b [] (cljs.closure/build "hops.cljs" {:optimizations :simple :output-to "hops.js"}))
+(defn b [] (cljs.closure/build "hops.cljs" {:optimizations :simple :pretty-print true :output-to "hops.js"}))
 
 (defn bloop []
   (println "\n\nwaiting for changes...")
@@ -29,4 +29,5 @@
   (recur))
 
 (swank.swank/start-server :port 8082)
+(b)
 (bloop)
