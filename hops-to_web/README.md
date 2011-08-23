@@ -21,7 +21,8 @@ is compiled from hops.cljs.
 * Multi-level page cache - LRU memo parse-links, disk cache for html
 * Escape page names.(?)
 * Show sentences for context.
-* Correct parens parsing.
+* Correct parens parsing.(!)
+* Fix stop-on-cycles.
 
 ## License
 
