@@ -30,7 +30,6 @@
     "/wiki" (response (fetch-wiki-page (:query-string req)))
     "/links" (response (str (into [] (parse-links/parse-links (:query-string req)))))
     "/love" (response "fear is the heart of love")
-    ;;"/hops.js" (file-response "/home/jli/projects/hops-to/hops-to_web/hops.js")
     (file-response "index.html")
     ))
 

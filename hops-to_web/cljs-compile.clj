@@ -1,6 +1,6 @@
 (ns cljs-compile
-  (:require [cljs.closure]
-            [swank.swank]))
+  (:require [cljs.closure]))
+
 
 (def runtime (java.lang.Runtime/getRuntime))
 
@@ -28,6 +28,5 @@
   (b)
   (recur))
 
-(swank.swank/start-server :port 8082)
 (b)
 (bloop)

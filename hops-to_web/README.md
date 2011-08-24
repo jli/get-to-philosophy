@@ -22,7 +22,6 @@ is compiled from hops.cljs.
 * Escape page names.(?)
 * Show sentences for context.
 * Correct parens parsing.(!)
-* Fix stop-on-cycles.
 
 ## License
 

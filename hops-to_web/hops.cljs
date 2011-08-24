@@ -91,7 +91,7 @@
                         k2 (fn [[type _ :as all]]
                              (if (not= type :cyclecontinue)
                                (k all)
-                               (do (out "cycle!")
+                               (do (out "cycle! →")
                                    (rec rest))))]
                     (if (empty? sentences-with-links)
                       (k [:end])
