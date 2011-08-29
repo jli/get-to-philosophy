@@ -15,7 +15,6 @@ is compiled from hops.cljs.
 
 ## Todo
 
-* Make clojurescript less quirky.
 * Multi-level page cache - LRU memo parse-links, disk cache for html
 * Escape page names.(?)
 * Show sentences for context.
