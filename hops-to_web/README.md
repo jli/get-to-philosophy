@@ -15,9 +15,7 @@ is compiled from hops.cljs.
 
 ## Todo
 
-* Clean up output. Replace trace and final list with constantly
-  updating list (when avoiding cycles, delete link).
-* Load article in frame.(?)
+* Make clojurescript less quirky.
 * Multi-level page cache - LRU memo parse-links, disk cache for html
 * Escape page names.(?)
 * Show sentences for context.
