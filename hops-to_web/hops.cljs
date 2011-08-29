@@ -1,5 +1,6 @@
 (ns hops.main
   (:require [goog.dom :as dom]
+            [goog.net.XhrIo :as Xhr]
             [cljs.reader :as reader]))
 
 ;;; substring doesn't throw exceptions on oob indexes, hurray. but
@@ -40,16 +41,10 @@
     (out-prim (dom/htmlToDocumentFragment " "))))
 
 (defn parse-links [article k]
-  ;; (set-iframe article)
-  ;; (out "parse-links" article)
-  (let [x (js* "new XMLHttpRequest()")
-        k2 (fn []
-             (when (= 4 (. x readyState))
-               ;; (out "parse-links on " article " ready")
-               (k (reader/read-string (. x responseText)))))]
-    (. x (open "GET" (str "/links?" article) true))
-    (js* "~{x}.onreadystatechange=~{k2}")
-    (. x (send))))
+  (let [k2 (fn [e]
+             (-> e (. target) (. (getResponseText)) reader/read-string k))]
+    (Xhr/send (str "/links?" article) k2)))
+
 
 
 
