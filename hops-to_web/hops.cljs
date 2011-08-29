@@ -30,9 +30,8 @@
 (defn wiki-url [article] (str wiki-prefix (normalize article)))
 
 (defn out-link [article]
-  (let [link (wiki-url article)
-        anchor (dom/createDom "a" (js* "{'href': ~{link}}") article)]
-    (out-prim anchor)
+  (let [link (wiki-url article)]
+    (out-prim (dom/htmlToDocumentFragment (str "<a href=\"" link "\">" article "</a>")))
     (out-prim (dom/htmlToDocumentFragment " "))))
 
 (defn parse-links [article k]
