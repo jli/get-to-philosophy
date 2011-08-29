@@ -3,13 +3,6 @@
             [goog.net.XhrIo :as Xhr]
             [cljs.reader :as reader]))
 
-;;; substring doesn't throw exceptions on oob indexes, hurray. but
-;;; just for reference if it did...
-;; (defn capitalize [s]
-;;   (try (let [first (. s (substring 0 1))
-;;              rest (. s (substring 1))]
-;;          (str (. first (toUpperCase)) rest))
-;;        (catch (js* "Object") e s)))
 (defn capitalize [s]
  (let [first (. s (substring 0 1))
              rest (. s (substring 1))]
@@ -44,9 +37,6 @@
   (let [k2 (fn [e]
              (-> e (. target) (. (getResponseText)) reader/read-string k))]
     (Xhr/send (str "/links?" article) k2)))
-
-
-
 
 ;; returns:
 ;; path-type: [[<article> <sentence> <next>] ...]
@@ -104,7 +94,7 @@ where transitions are a cycle.
 (def spinner-transition (transition-map [:bltr :hor :tlbr :vert]))
 (defn spinner-set-dir [dir]
   (let [txt ({:vert "|", :tlbr "\\", :hor "-", :bltr "/", :done ""} dir)]
-    (js* "~{spinner}.innerHTML=~{txt}")))
+    (dom/setTextContent spinner txt)))
 (defn start-spinner []
   (let [anim (fn anim []
                (let [s @spinner-state]
