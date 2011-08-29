@@ -2,11 +2,6 @@
   (:require [goog.dom :as dom]
             [cljs.reader :as reader]))
 
-;;; doesn't work well - too jumpy. unless I can load in the text...
-;; (defn set-iframe [a]
-;;   (let [link (str "/wiki?" a )]
-;;     (js* "document.getElementById('iframe').src=~{link};")))
-
 ;;; substring doesn't throw exceptions on oob indexes, hurray. but
 ;;; just for reference if it did...
 ;; (defn capitalize [s]
@@ -43,11 +38,6 @@
         anchor (dom/createDom "a" (js* "{'href': ~{link}}") article)]
     (out-prim anchor)
     (out-prim (dom/htmlToDocumentFragment " "))))
-
-(defn all-ints
-  "[start] Infinite seq of ints, starting at <start> if given."
-  ([] (all-ints 1))
-  ([start] (iterate inc start)))
 
 (defn parse-links [article k]
   ;; (set-iframe article)
