@@ -1,6 +1,8 @@
 (ns hops.main
   (:require [goog.dom :as dom]
             [goog.net.XhrIo :as Xhr]
+            [goog.Timer :as Timer] ;; ??? why do I still have to say goog.Timer?
+            [goog.events :as events]
             [cljs.reader :as reader]))
 
 (defn capitalize [s]
@@ -96,14 +98,16 @@ where transitions are a cycle.
   (let [txt ({:vert "|", :tlbr "\\", :hor "-", :bltr "/", :done ""} dir)]
     (dom/setTextContent spinner txt)))
 (defn start-spinner []
-  (let [anim (fn anim []
+  (let [timer (goog.Timer. 250)
+        anim (fn []
                (let [s @spinner-state]
                  (spinner-set-dir s)
-                 (when (not= s :done)
+                 (if (not= s :done)
                    (swap! spinner-state spinner-transition)
-                   (js* "setTimeout(~{anim}, 150)"))))]
+                   (. timer (stop)))))]
     (reset! spinner-state :hor)
-    (js* "setTimeout(~{anim}, 150)")))
+    (. timer (start))
+    (events/listen timer goog.Timer/TICK anim)))
 
 (defn stop-spinner [] (reset! spinner-state :done))
 
