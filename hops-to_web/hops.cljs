@@ -102,10 +102,10 @@ where transitions are a cycle.
                  (when (not= s :done)
                    (swap! spinner-state spinner-transition)
                    (js* "setTimeout(~{anim}, 150)"))))]
-    (swap! spinner-state (constantly :hor))
+    (reset! spinner-state :hor)
     (js* "setTimeout(~{anim}, 150)")))
 
-(defn stop-spinner [] (swap! spinner-state (constantly :done)))
+(defn stop-spinner [] (reset! spinner-state :done))
 
 (defn ^:export go
   "[start stop cyclestop] Start at <start>, hop til <stop>, print out
