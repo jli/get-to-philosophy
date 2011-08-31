@@ -29,7 +29,7 @@ function get(id) { return document.getElementById(id); }
 
 function go() {
   get('out').innerHTML='';
-  hops.main.go(get('start').value, get('stop').value, 50, get('cyclestop').checked);
+  hops.main.go(get('start').value, get('stop').value, 100, get('cyclestop').checked);
   return false; // false to prevent actual form submission
 }
 get('form').onsubmit=go;
