@@ -4,6 +4,7 @@
         [ring.middleware.file :only [wrap-file]]
         ;; [ring.middleware.reload :only [wrap-reload]]
         [ring.middleware.stacktrace :only [wrap-stacktrace]]
+        [clojure.contrib.command-line :only [with-command-line]]
         [hops-to.parse-links :as parse-links])
   (:require [swank.swank])
   (:gen-class))
@@ -39,7 +40,12 @@
          ;; (wrap-reload '[hops-to.core hops-to.parse-links]) ; too slow
          (wrap-stacktrace)))
 
-(defn -main []
-  ;; DYNAMISM
-  (swank.swank/start-server :port 8081)
-  (run-jetty #'app {:port 8080}))
+(defn -main [& args]
+  (with-command-line args
+    "hoppity!"
+    [[jetty-port j "jetty port" "8080"]
+     [no-swank? "don't start swank server" false]
+     [swank-port s "swank port" "8081"]]
+    (when (not no-swank?)
+      (swank.swank/start-server :port (Integer/parseInt swank-port)))
+    (run-jetty #'app {:port (Integer/parseInt jetty-port)})))
