@@ -7,4 +7,5 @@
                  [ring/ring-devel "0.3.11"]
                  [ring/ring-jetty-adapter "0.3.11"]
                  [enlive "1.0.0-SNAPSHOT"]]
+  :dev-dependencies [[swank-clojure/swank-clojure "1.3.2"]]
   :main hops-to.core)
