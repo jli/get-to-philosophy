@@ -6,6 +6,5 @@
                  [ring/ring-core "0.3.11"]
                  [ring/ring-devel "0.3.11"]
                  [ring/ring-jetty-adapter "0.3.11"]
-                 [enlive "1.0.0-SNAPSHOT"]
-                 [swank-clojure/swank-clojure "1.3.2"]]
+                 [enlive "1.0.0-SNAPSHOT"]]
   :main hops-to.core)

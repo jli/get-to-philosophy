@@ -7,7 +7,7 @@
         [ring.middleware.gzip :only [wrap-gzip]]
         [clojure.contrib.command-line :only [with-command-line]]
         [hops-to.parse-links :as parse-links])
-  (:require [swank.swank])
+  ;;(:require [swank.swank])
   (:gen-class))
 
 
@@ -48,6 +48,6 @@
     [[jetty-port j "jetty port" "8080"]
      [no-swank? "don't start swank server" false]
      [swank-port s "swank port" "8081"]]
-    (when (not no-swank?)
-      (swank.swank/start-server :port (Integer/parseInt swank-port)))
+    ;;(when (not no-swank?)
+    ;;  (swank.swank/start-server :port (Integer/parseInt swank-port)))
     (run-jetty #'app {:port (Integer/parseInt jetty-port)})))
