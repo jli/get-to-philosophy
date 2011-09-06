@@ -1,1 +1,1 @@
-web: lein run --no-swank
+web: lein run -j 80 --no-swank
