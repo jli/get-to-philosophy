@@ -5,6 +5,8 @@ backend, [ClojureScript] (https://github.com/clojure/clojurescript)
 front) for playing the [Get To Philosophy game]
 (http://en.wikipedia.org/wiki/Wikipedia:Get_to_Philosophy).
 
+A demo: http://hops.circularly.org/
+
 ## Usage
 
 FIXME: details.
